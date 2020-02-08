@@ -1,0 +1,12 @@
+<h1>Hello, {{ user.first_name }}</h1>
+<ul>
+    {% for category, items in menu.items %}
+      <h3> {{ category }} </h3>
+      <ul>
+          {% for item in items %}
+              <li> {{ item.name }} </li>
+          {% endfor %}
+      </ul>
+    {% endfor %}
+    <li><a href="{% url 'logout' %}">Logout</a></li>
+</ul>

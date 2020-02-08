@@ -1,0 +1,64 @@
+{% extends "orders/index.html" %}
+
+<!-- <h1>Register</h1>
+{% if message %}
+    <div>
+        {{ message }}
+    </div>
+{% endif %}
+<form action="{% url 'register' %}" method="post">
+    {% csrf_token %}
+    <input name="username" type="text"/>
+    <input name="email" type="text"/>
+    <input name="first_name" type="text"/>
+    <input name="last_name" type="text"/>
+    <input name="password" type="password"/>
+    <input type="submit" value="Login"/>
+</form> -->
+
+{% block content %}
+<div class="column is-4 is-offset-4">
+    <h3 class="title">Register</h3>
+    <div class="box">
+        {% if message %}
+          <div class="notification is-danger">
+              {{ message }}. Go to <a href="{% url 'login' %}">login page</a>.
+          </div>
+        {% endif %}
+        <form method="POST" action="{% url 'register' %}">
+          {% csrf_token %}
+            <div class="field">
+                <div class="control">
+                    <input class="input is-large" type="email" name="email" placeholder="Email" autofocus="">
+                </div>
+            </div>
+
+            <div class="field">
+                <div class="control">
+                    <input class="input is-large" type="text" name="username" placeholder="Username" autofocus="">
+                </div>
+            </div>
+
+            <div class="field">
+                <div class="control">
+                    <input class="input is-large" type="text" name="first_name" placeholder="First Name">
+                </div>
+            </div>
+
+            <div class="field">
+                <div class="control">
+                    <input class="input is-large" type="text" name="last_name" placeholder="Last Name">
+                </div>
+            </div>
+
+            <div class="field">
+                <div class="control">
+                    <input class="input is-large" type="password" name="password" placeholder="Password">
+                </div>
+            </div>
+
+            <button class="button is-block is-info is-large is-fullwidth">Register</button>
+        </form>
+    </div>
+</div>
+{% endblock %}
