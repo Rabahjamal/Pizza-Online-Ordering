@@ -11,6 +11,7 @@ def index(request):
         return render(request, "orders/index.html", {"message": None})
     # get all categories from the database
     categories = Category.objects.all()
+    toppings = Topping.objects.all()
 
     # extract the menu items from the database in a dictionary where
     # is the key is the category name and the value is a list of items
@@ -20,7 +21,8 @@ def index(request):
 
     context = {
       "user": request.user,
-      "menu": menu
+      "menu": menu,
+      "toppings": toppings
     }
     return render(request, "orders/home.html", context)
 

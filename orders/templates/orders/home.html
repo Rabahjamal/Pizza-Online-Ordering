@@ -1,12 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Bootstrap Example</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+</head>
+<body>
+
+
+
 <h1>Hello, {{ user.first_name }}</h1>
 <ul>
     {% for category, items in menu.items %}
       <h3> {{ category }} </h3>
       <ul>
           {% for item in items %}
-              <li> {{ item.name }} </li>
+              <li><a href="" data-toggle="modal" data-target="#{{ item.id }}">{{ item.name }}</a></li>
+              <!-- Modal -->
+                <div class="modal fade" id="{{ item.id }}" role="dialog">
+                  <div class="modal-dialog">
+
+                    <!-- Modal content-->
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        <h4 class="modal-title">Modal Header</h4>
+                      </div>
+                      <div class="modal-body">
+                        <p>{{ item.name }}</p>
+                <input type="radio" id="small_price" name="small_price" value="{{ item.small_price}}">
+                <label for="small_price">Small ({{ item.small_price}})</label><br>
+                <input type="radio" id="large_price" name="large_price" value="{{ item.large_price}}">
+                <label for="large_price">Large ({{ item.large_price}})</label><br>
+                      </div>
+                      {% if item.number_of_topping %}
+                      <p>Toppings</p>
+                      {% for topping in toppings %}
+                      <input type="checkbox" id="Topping{{topping.id}}" name="{{ topping.name }}" value="{{ topping.name }}">
+                      <label for="Topping{{topping.id}}">{{ topping.name }}</label><br>
+                      {% endfor %}
+                      {% endif %}
+                      <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Add to cart</button>
+                      </div>
+                    </div>
+
+                  </div>
+                </div>
           {% endfor %}
       </ul>
     {% endfor %}
     <li><a href="{% url 'logout' %}">Logout</a></li>
 </ul>
+
+<!-- Modal -->
+<!--  <div class="modal fade" id="myModal" role="dialog">
+    <div class="modal-dialog"> -->
+
+      <!-- Modal content-->
+    <!--  <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+          <h4 class="modal-title">Modal Header</h4>
+        </div>
+        <div class="modal-body">
+          <p>Some text.</p>
+  <input type="radio" id="male" name="gender" value="male">
+  <label for="male">Male</label><br>
+  <input type="radio" id="female" name="gender" value="female">
+  <label for="female">Female</label><br>
+  <input type="radio" id="other" name="gender" value="other">
+  <label for="other">Other</label>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        </div>
+      </div>
+
+    </div>
+  </div>-->
+</body>
+</html>
