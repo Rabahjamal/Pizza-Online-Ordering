@@ -3,6 +3,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
 from django.contrib.auth.models import User
+from django.core import serializers
 from .models import *
 
 # Create your views here.
@@ -12,6 +13,7 @@ def index(request):
     # get all categories from the database
     categories = Category.objects.all()
     toppings = Topping.objects.all()
+    extra_items = Extra.objects.all()
 
     # extract the menu items from the database in a dictionary where
     # is the key is the category name and the value is a list of items
@@ -19,10 +21,16 @@ def index(request):
     for category in categories:
         menu[category.name] = MenuItem.objects.filter(category=category)
 
+    serialized_menu = dict()
+    for category in menu:
+        serialized_menu[category] = serializers.serialize('json', menu[category])
+
     context = {
       "user": request.user,
       "menu": menu,
-      "toppings": toppings
+      "toppings": toppings,
+      "extra_items": extra_items,
+      "serialized_menu": serialized_menu
     }
     return render(request, "orders/home.html", context)
 
