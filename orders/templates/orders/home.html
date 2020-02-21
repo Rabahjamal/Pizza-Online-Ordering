@@ -9,26 +9,43 @@
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
   <script>
         document.addEventListener('DOMContentLoaded', function() {
-            var data = {{ serialized_menu | safe }};
-            console.log(data);
-            /*for(var key in data)
+            var menu = {{ serialized_menu | safe }};
+            //console.log(menu);
+            var add_buttons = document.querySelectorAll('.add');
+            for(var i = 0; i < add_buttons.length; i++)
             {
-              for(var item in data[key])
+                  add_buttons[i].onclick = function()
+                  {
+                     var button_id = this.id;
+                     var id = button_id.split("_")[1];
+                     const name = document.querySelector('#itemName_'+id).innerHTML;
+                     const small_price = document.querySelector('#small_price_'+id).value;
+                     const large_price = document.querySelector('#large_price_'+id).value;
+                     console.log(name);
+                     console.log(small_price);
+                     console.log(large_price);
+
+                  }
+            }
+              /*for(var key in menu)
               {
-                 console.log(item)
-              }
-            }*/
-              document.querySelector('#add').onclick = function() {
-                const name = document.querySelector('#itemName').value;
-                const small_price = document.querySelector('#small_price').value;
-                const large_price = document.querySelector('#large_price').value;
-                //const name = document.querySelector('#itemName').value;
-              //  const name = document.querySelector('#itemName').value;
-                console.log("hala");
-                console.log(name);
-                console.log(small_price);
-                console.log(large_price);
-              };
+                var category_items = JSON.parse(menu[key]);
+                //console.log(category_items);
+                for(var item in category_items)
+                {
+                   console.log('#add_'+category_items[item]["pk"])
+                   document.querySelector('#add_'+category_items[item]["pk"]).onclick = function() {
+                     const name = document.querySelector('#itemName_'+category_items[item]["pk"]).value;
+                     const small_price = document.querySelector('#small_price_'+category_items[item]["pk"]).value;
+                     const large_price = document.querySelector('#large_price_'+category_items[item]["pk"]).value;
+                     //const name = document.querySelector('#itemName').value;
+                   //  const name = document.querySelector('#itemName').value;
+                     console.log(name);
+                     console.log(small_price);
+                     console.log(large_price);
+                   };
+                }
+              }*/
           });
   </script>
 </head>
@@ -55,20 +72,20 @@
                         <h4 class="modal-title">Modal Header</h4>
                       </div>
                       <div class="modal-body">
-                        <p id="itemName">{{ item.name }}</p>
+                        <p id="itemName_{{ item.id }}">{{ item.name }}</p>
                         {% if item.small_price %}
-                          <input type="radio" id="small_price" name="small_price" value="{{ item.small_price}}">
+                          <input type="radio" id="small_price_{{ item.id }}" name="small_price" value="{{ item.small_price}}">
                           <label for="small_price">Small ({{ item.small_price}})</label><br>
                         {% endif %}
                         {% if item.large_price %}
-                          <input type="radio" id="large_price" name="large_price" value="{{ item.large_price}}">
+                          <input type="radio" id="large_price_{{ item.id }}" name="large_price" value="{{ item.large_price}}">
                           <label for="large_price">Large ({{ item.large_price}})</label><br>
                         {% endif %}
                       </div>
                       {% if item.number_of_topping %}
                       <p>Toppings</p>
                       {% for topping in toppings %}
-                      <input type="checkbox" id="Topping{{topping.id}}" name="{{ topping.name }}" value="{{ topping.name }}">
+                      <input type="checkbox" id="Topping{{topping.id}}_{{ item.id }}" name="{{ topping.name }}" value="{{ topping.name }}">
                       <label for="Topping{{topping.id}}">{{ topping.name }}</label><br>
                       {% endfor %}
                       {% endif %}
@@ -76,12 +93,12 @@
                       {% if item.number_of_extra_items %}
                       <p>Add extra items to your sub</p>
                       {% for extra_item in extra_items %}
-                      <input type="checkbox" id="Extra{{extra_item.id}}" name="{{ extra_item.name }}" value="{{ extra_item.name }}">
+                      <input type="checkbox" id="Extra{{extra_item.id}}_{{ item.id }}" name="{{ extra_item.name }}" value="{{ extra_item.name }}">
                       <label for="Extra{{extra_item.id}}">{{ extra_item.name }}</label><br>
                       {% endfor %}
                       {% endif %}
                       <div class="modal-footer">
-                        <button id="add" type="button submit" class="btn btn-default" data-dismiss="modal">Add to cart</button>
+                        <button id="add_{{ item.id }}" type="button submit" class="btn btn-default add" data-dismiss="modal">Add to cart</button>
                       <!--  <input class="button btn btn-default is-block is-info is-large is-fullwidth" type="submit" data-dismiss="modal" value="Add to cart"> -->
                       </div>
                     </div>
