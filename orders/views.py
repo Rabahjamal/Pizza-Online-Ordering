@@ -1,9 +1,10 @@
 from django.contrib.auth import authenticate, login, logout
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import render
 from django.urls import reverse
 from django.contrib.auth.models import User
 from django.core import serializers
+import json
 from .models import *
 
 # Create your views here.
@@ -66,9 +67,39 @@ def register(request):
         user.last_name = last_name
         user.save()
 
+        #create a shopping_cart for this user
+        cart = Cart(user=user)
+        cart.save()
+
         login(request, user)
         return HttpResponseRedirect(reverse("index"))
     else:
         if not request.user.is_authenticated:
             return render(request, "orders/register.html", {"message": None})
         return HttpResponseRedirect(reverse("index"))
+
+def add_to_shopping_cart(request):
+    print(request.body.decode("utf-8"))
+    req = json.loads(request.body.decode("utf-8"))
+    #req = json.loads(request.POST.get('data', ''))
+    print(req)
+    item_id = req["item_id"]
+    size = req["size"]
+    quantity = req["quantity"]
+    price = req["price"]
+
+    item = MenuItem.objects.filter(id=item_id)
+    cart = Cart.objects.filter(user=request.user)
+    total_price = price * quantity
+
+    cart_item = CartItem(item=item[0], size=size, quantity=quantity, total_price=total_price, cart=cart[0])
+    cart_item.save()
+
+    return JsonResponse({"success": True})
+
+
+def remove_from_shopping_cart(request):
+    pass
+
+def get_shopping_cart_items(request):
+    pass

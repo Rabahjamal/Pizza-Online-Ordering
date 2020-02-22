@@ -19,12 +19,44 @@
                      var button_id = this.id;
                      var id = button_id.split("_")[1];
                      const name = document.querySelector('#itemName_'+id).innerHTML;
-                     const small_price = document.querySelector('#small_price_'+id).value;
-                     const large_price = document.querySelector('#large_price_'+id).value;
                      console.log(name);
-                     console.log(small_price);
-                     console.log(large_price);
-
+                     if(document.querySelector('#small_price_'+id) && document.querySelector('#small_price_'+id).checked)
+                     {
+                        const small_price = document.querySelector('#small_price_'+id).value;
+                        console.log(small_price);
+                        //const li = document.createElement('li');
+                        //li.innerHTML = name + " Samll(" + small_price + ")";
+                        //document.querySelector('#shopping_list').append(li);
+                        var item_data = {'item_id': id, 'size': "Small", 'quantity': 1, 'price': small_price};
+                     }
+                     else if(document.querySelector('#large_price_'+id) && document.querySelector('#large_price_'+id).checked)
+                     {
+                       const large_price = document.querySelector('#large_price_'+id).value;
+                       console.log(large_price);
+                       //const li = document.createElement('li');
+                       //li.innerHTML = name + " Large(" + large_price + ")";
+                       //document.querySelector('#shopping_list').append(li);
+                       var item_data = {'item_id': id, 'size': "Large", 'quantity': 1, 'price': large_price};
+                     }
+                     $.ajaxSetup({
+                            headers: { "X-CSRFToken": '{{csrf_token}}' }
+                      });
+                     $.ajax({
+                          type: 'POST',
+                          dataType: 'json',
+                          contentType: 'application/json; charset=utf-8',
+                          url: "{% url 'add_to_shopping_cart' %}",
+                          data: JSON.stringify(item_data),
+                          success: function (response) {
+                               const li = document.createElement('li');
+                               li.innerHTML = name + " " + item_data['size'] + "(" + item_data['price'] + ")";
+                               document.querySelector('#shopping_list').append(li);
+                          },
+                          error: function (response) {
+                              // alert the error if any error occured
+                              console.log("error");
+                          }
+                        });
                   }
             }
               /*for(var key in menu)
@@ -65,7 +97,8 @@
                   <div class="modal-dialog">
 
                     <!-- Modal content-->
-                <!--    <form id="form"> -->
+                <form id="form">
+                  {% csrf_token %}
                     <div class="modal-content">
                       <div class="modal-header">
                         <button type="button" class="close" data-dismiss="modal">&times;</button>
@@ -102,7 +135,7 @@
                       <!--  <input class="button btn btn-default is-block is-info is-large is-fullwidth" type="submit" data-dismiss="modal" value="Add to cart"> -->
                       </div>
                     </div>
-              <!--    </form> -->
+                  </form>
                   </div>
                 </div>
           {% endfor %}

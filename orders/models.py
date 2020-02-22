@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.auth.models import User
 
 # Create your models here.
 class Topping(models.Model):
@@ -32,3 +33,18 @@ class MenuItem(models.Model):
 
     def __str__(self):
         return f"{self.name} from {self.category}"
+
+class Cart(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f"shopping cart of user {self.user.username}"
+
+class CartItem(models.Model):
+    item = models.ForeignKey(MenuItem, on_delete=models.CASCADE)
+    topping = models.ManyToManyField(Topping, blank=True)
+    extra = models.ManyToManyField(Extra, blank=True)
+    size = models.CharField(max_length=5)
+    quantity = models.IntegerField()
+    total_price = models.FloatField()
+    cart = models.ForeignKey(Cart, on_delete=models.CASCADE)
