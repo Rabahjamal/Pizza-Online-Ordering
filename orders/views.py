@@ -87,6 +87,8 @@ def add_to_shopping_cart(request):
     size = req["size"]
     quantity = req["quantity"]
     price = req["price"]
+    toppings = req['toppings']
+    extras = req['extra']
 
     item = MenuItem.objects.filter(id=item_id)
     cart = Cart.objects.filter(user=request.user)
@@ -95,6 +97,12 @@ def add_to_shopping_cart(request):
     cart_item = CartItem(item=item[0], size=size, quantity=quantity, total_price=total_price, cart=cart[0])
     cart_item.save()
 
+    for topping in toppings:
+        cart_item.topping.add(Topping.objects.filter(name=topping)[0])
+
+    for extra in extras:
+        cart_item.extra.add(Extra.objects.filter(name=extra)[0])
+
     return JsonResponse({"success": True})
 
 
@@ -102,4 +110,23 @@ def remove_from_shopping_cart(request):
     pass
 
 def get_shopping_cart_items(request):
-    pass
+    cart = Cart.objects.filter(user=request.user)
+    cart_items = CartItem.objects.filter(cart=cart[0])
+
+    items = []
+    for item in cart_items:
+        dic = dict()
+        dic['name'] = item.item.name
+        dic['size'] = item.size
+        dic['quantity'] = item.quantity
+        dic['price'] = item.total_price
+        dic['toppings'] = []
+        for topping in item.topping.all():
+            dic['toppings'].append(topping.name)
+        dic['extra'] = []
+        for extra in item.extra.all():
+            dic['extra'].append(extra.name)
+        items.append(dic)
+
+    json_obj = json.dumps(items)
+    return JsonResponse(json_obj, safe=False)

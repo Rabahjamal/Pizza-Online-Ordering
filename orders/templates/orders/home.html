@@ -10,7 +10,50 @@
   <script>
         document.addEventListener('DOMContentLoaded', function() {
             var menu = {{ serialized_menu | safe }};
-            //console.log(menu);
+
+            // retrive shopping cart items when the user refresh the page
+            $.ajax({
+                 dataType: 'json',
+                 url: "{% url 'get_shopping_cart_items' %}",
+                 success: function (response) {
+                      //const li = document.createElement('li');
+                      //li.innerHTML = name + " " + item_data['size'] + "(" + item_data['price'] + ")";
+                      //document.querySelector('#shopping_list').append(li);
+                      console.log(JSON.parse(response));
+                      shopping_cart_items = JSON.parse(response);
+                      for(var i = 0; i < shopping_cart_items.length; i++)
+                      {
+                        const li = document.createElement('li');
+                        li.innerHTML = shopping_cart_items[i]["name"] + " " +
+                         shopping_cart_items[i]['size'] + "(" + shopping_cart_items[i]['price'] + ")";
+                        document.querySelector('#shopping_list').append(li);
+
+                        if(shopping_cart_items[i]['toppings'].length)
+                        {
+                          li.innerHTML += " Toppings: "
+                          for(var j = 0; j < shopping_cart_items[i]['toppings'].length - 1; j++)
+                          {
+                            li.innerHTML += shopping_cart_items[i]['toppings'][j] + ', ';
+                          }
+                          li.innerHTML += shopping_cart_items[i]['toppings'][shopping_cart_items[i]['toppings'].length - 1];
+                        }
+                        if(shopping_cart_items[i]['extra'].length)
+                        {
+                          li.innerHTML += " Extra: "
+                          for(var j = 0; j < shopping_cart_items[i]['extra'].length - 1; j++)
+                          {
+                            li.innerHTML += shopping_cart_items[i]['extra'][j] + ', ';
+                          }
+                          li.innerHTML += shopping_cart_items[i]['extra'][shopping_cart_items[i]['extra'].length - 1];
+                        }
+                      }
+                 },
+                 error: function (response) {
+                     // alert the error if any error occured
+                     console.log("error");
+                 }
+               });
+
             var add_buttons = document.querySelectorAll('.add');
             for(var i = 0; i < add_buttons.length; i++)
             {
@@ -27,7 +70,7 @@
                         //const li = document.createElement('li');
                         //li.innerHTML = name + " Samll(" + small_price + ")";
                         //document.querySelector('#shopping_list').append(li);
-                        var item_data = {'item_id': id, 'size': "Small", 'quantity': 1, 'price': small_price};
+                        var item_data = {'item_id': id, 'size': "Small", 'quantity': 1, 'price': small_price, 'toppings': [], 'extra': []};
                      }
                      else if(document.querySelector('#large_price_'+id) && document.querySelector('#large_price_'+id).checked)
                      {
@@ -36,8 +79,29 @@
                        //const li = document.createElement('li');
                        //li.innerHTML = name + " Large(" + large_price + ")";
                        //document.querySelector('#shopping_list').append(li);
-                       var item_data = {'item_id': id, 'size': "Large", 'quantity': 1, 'price': large_price};
+                       var item_data = {'item_id': id, 'size': "Large", 'quantity': 1, 'price': large_price, 'toppings': [], 'extra': []};
                      }
+                     // check for topping and extra items
+                     var toppings = document.querySelectorAll('.Topping_'+id);
+                     for(var i = 0; i < toppings.length; i++)
+                     {
+                       if(toppings[i] && toppings[i].checked)
+                       {
+                         //console.log(toppings[i].value);
+                         item_data["toppings"].push(toppings[i].value);
+                       }
+                     }
+
+                     var extra = document.querySelectorAll('.Extra_'+id);
+                     for(var i = 0; i < extra.length; i++)
+                     {
+                       if(extra[i] && extra[i].checked)
+                       {
+                         //console.log(extra[i].value);
+                         item_data['extra'].push(extra[i].value)
+                       }
+                     }
+                     console.log(item_data);
                      $.ajaxSetup({
                             headers: { "X-CSRFToken": '{{csrf_token}}' }
                       });
@@ -50,6 +114,24 @@
                           success: function (response) {
                                const li = document.createElement('li');
                                li.innerHTML = name + " " + item_data['size'] + "(" + item_data['price'] + ")";
+                               if(item_data['toppings'].length)
+                               {
+                                 li.innerHTML += " Toppings: "
+                                 for(var i = 0; i < item_data['toppings'].length - 1; i++)
+                                 {
+                                   li.innerHTML += item_data['toppings'][i] + ', ';
+                                 }
+                                 li.innerHTML += item_data['toppings'][item_data['toppings'].length - 1];
+                               }
+                               if(item_data['extra'].length)
+                               {
+                                 li.innerHTML += " Extra: "
+                                 for(var i = 0; i < item_data['extra'].length - 1; i++)
+                                 {
+                                   li.innerHTML += item_data['extra'][i] + ', ';
+                                 }
+                                 li.innerHTML += item_data['extra'][item_data['extra'].length - 1];
+                               }
                                document.querySelector('#shopping_list').append(li);
                           },
                           error: function (response) {
@@ -118,7 +200,7 @@
                       {% if item.number_of_topping %}
                       <p>Toppings</p>
                       {% for topping in toppings %}
-                      <input type="checkbox" id="Topping{{topping.id}}_{{ item.id }}" name="{{ topping.name }}" value="{{ topping.name }}">
+                      <input type="checkbox" id="Topping{{topping.id}}_{{ item.id }}" class="Topping_{{item.id}}" name="{{ topping.name }}" value="{{ topping.name }}">
                       <label for="Topping{{topping.id}}">{{ topping.name }}</label><br>
                       {% endfor %}
                       {% endif %}
@@ -126,7 +208,7 @@
                       {% if item.number_of_extra_items %}
                       <p>Add extra items to your sub</p>
                       {% for extra_item in extra_items %}
-                      <input type="checkbox" id="Extra{{extra_item.id}}_{{ item.id }}" name="{{ extra_item.name }}" value="{{ extra_item.name }}">
+                      <input type="checkbox" id="Extra{{extra_item.id}}_{{ item.id }}" class="Extra_{{item.id}}" name="{{ extra_item.name }}" value="{{ extra_item.name }}">
                       <label for="Extra{{extra_item.id}}">{{ extra_item.name }}</label><br>
                       {% endfor %}
                       {% endif %}
