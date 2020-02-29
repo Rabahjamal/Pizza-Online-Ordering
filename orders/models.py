@@ -1,5 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
+from datetime import date
+from django.utils import timezone
 
 # Create your models here.
 class Topping(models.Model):
@@ -34,6 +36,16 @@ class MenuItem(models.Model):
     def __str__(self):
         return f"{self.name} from {self.category}"
 
+class Order(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    date = models.DateField(default=date.today)
+    time = models.DateTimeField(default=timezone.now)
+    delivery_address = models.CharField(max_length=256)
+    #shopping_cart = models.ForeignKey(Cart, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f"Order {self.id} placed by user {self.user.username}"
+
 class Cart(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
 
@@ -47,4 +59,8 @@ class CartItem(models.Model):
     size = models.CharField(max_length=5)
     quantity = models.IntegerField()
     total_price = models.FloatField()
-    cart = models.ForeignKey(Cart, on_delete=models.CASCADE)
+    cart = models.ForeignKey(Cart, null=True, on_delete=models.CASCADE)
+    order = models.ForeignKey(Order, null=True, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f"{self.quantity} of {self.size} {self.item.name}"

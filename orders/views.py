@@ -109,12 +109,23 @@ def add_to_shopping_cart(request):
 def remove_from_shopping_cart(request):
     pass
 
+#def is(user_orders, cart_item):
+
+#    for order in user_orders:
+#        for item in order.shopping_cart.cartitem_set.all():
+#            if item.id == cart_item.id:
+#                return True
+#    return False
+
 def get_shopping_cart_items(request):
     cart = Cart.objects.filter(user=request.user)
     cart_items = CartItem.objects.filter(cart=cart[0])
 
+    #user_orders = Order.objects.filter(user=request.user)
+
     items = []
     for item in cart_items:
+        #if not is(user_orders, cart_item):
         dic = dict()
         dic['name'] = item.item.name
         dic['size'] = item.size
@@ -130,3 +141,30 @@ def get_shopping_cart_items(request):
 
     json_obj = json.dumps(items)
     return JsonResponse(json_obj, safe=False)
+
+def place_order(request):
+    if request.method == 'POST':
+        city = request.POST["City"]
+        district = request.POST["District"]
+        street_number = request.POST["StreetNumber"]
+        building_number = request.POST["BuildingNumber"]
+
+        address = city + "-" + district + "-" + street_number + "-" + building_number
+        order = Order(user=request.user, delivery_address=address)
+        order.save()
+
+        user_shopping_cart = Cart.objects.filter(user=request.user)
+        user_shopping_cart_items = CartItem.objects.filter(cart=user_shopping_cart[0])
+
+        # associate the items in the shopping cart with the created order and remove them from the shopping cart
+        for item in user_shopping_cart_items:
+            item.order = order
+            item.cart = None
+            item.save()
+
+        print("the order was placed sucessfully")
+        return HttpResponseRedirect(reverse("index"))
+    else:
+        if request.user.is_authenticated:
+            return render(request, "orders/create_order.html")
+        return HttpResponseRedirect(reverse("index"))

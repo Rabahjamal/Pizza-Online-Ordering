@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Bootstrap Example</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+</head>
+
+<body>
+
+  <h3>Please add your delivery address</h3>
+
+  <form action="{% url 'place_order' %}" method="post">
+        {% csrf_token %}
+          <div class="form-group">
+              <input class="form-control" name="City" id="city_name">
+              <label for="city_name">City</label><br>
+          </div>
+
+          <div class="form-group">
+              <input class="form-control" name="District" id="district">
+              <label for="district">District</label><br>
+          </div>
+
+          <div class="form-group">
+              <input class="form-control" name="StreetNumber" id="StreetNumber">
+              <label for="StreetNumber">Street Number</label><br>
+          </div>
+
+          <div class="form-group">
+              <input class="form-control" name="BuildingNumber" id="BuildingNumber">
+              <label for="BuildingNumber">Building Number</label><br>
+          </div>
+
+          <div class="form-group">
+              <button class="btn btn-primary">Submit</button>
+          </div>
+
+      </form>
+
+</body>
+</html>

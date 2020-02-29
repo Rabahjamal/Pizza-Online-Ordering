@@ -47,6 +47,17 @@
                           li.innerHTML += shopping_cart_items[i]['extra'][shopping_cart_items[i]['extra'].length - 1];
                         }
                       }
+
+                      if(shopping_cart_items.length)
+                      {
+                        var btn = document.createElement("BUTTON");
+                        btn.innerHTML = "Proceed";
+                        btn.setAttribute("id", "proceed_button");
+                        btn.onclick = function() {
+                          window.location.href = "{% url 'place_order' %}";
+                        }
+                        document.getElementById("shopping_cart").appendChild(btn);
+                      }
                  },
                  error: function (response) {
                      // alert the error if any error occured
@@ -133,6 +144,16 @@
                                  li.innerHTML += item_data['extra'][item_data['extra'].length - 1];
                                }
                                document.querySelector('#shopping_list').append(li);
+                               
+                               if(!document.querySelector('#proceed_button')) {
+                                   var btn = document.createElement("BUTTON");
+                                   btn.innerHTML = "Proceed";
+                                   btn.setAttribute("id", "proceed_button");
+                                   btn.onclick = function() {
+                                     window.location.href = "{% url 'place_order' %}";
+                                   }
+                                   document.getElementById("shopping_cart").appendChild(btn);
+                               }
                           },
                           error: function (response) {
                               // alert the error if any error occured
@@ -228,6 +249,7 @@
 <div id="shopping_cart">
 <h3>Your shopping cart</h3>
 <ul id="shopping_list"></ul>
+<!-- <button onclick="window.location.href = '{% url 'place_order' %}'">Proceed</button> -->
 </div>
 
 <a href="{% url 'logout' %}">Logout</a>
