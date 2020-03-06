@@ -74,6 +74,8 @@
                      var id = button_id.split("_")[1];
                      const name = document.querySelector('#itemName_'+id).innerHTML;
                      console.log(name);
+                     var no_size_is_selected = true;
+                     var item_data = {'item_id': null, 'size': null, 'quantity': null, 'price': null, 'toppings': [], 'extra': []};;
                      if(document.querySelector('#small_price_'+id) && document.querySelector('#small_price_'+id).checked)
                      {
                         const small_price = document.querySelector('#small_price_'+id).value;
@@ -81,7 +83,9 @@
                         //const li = document.createElement('li');
                         //li.innerHTML = name + " Samll(" + small_price + ")";
                         //document.querySelector('#shopping_list').append(li);
-                        var item_data = {'item_id': id, 'size': "Small", 'quantity': 1, 'price': small_price, 'toppings': [], 'extra': []};
+                        item_data = {'item_id': id, 'size': "Small", 'quantity': 1, 'price': small_price, 'toppings': [], 'extra': []};
+                        document.querySelector('#small_price_'+id).checked = 0;
+                        no_size_is_selected = false;
                      }
                      else if(document.querySelector('#large_price_'+id) && document.querySelector('#large_price_'+id).checked)
                      {
@@ -90,7 +94,9 @@
                        //const li = document.createElement('li');
                        //li.innerHTML = name + " Large(" + large_price + ")";
                        //document.querySelector('#shopping_list').append(li);
-                       var item_data = {'item_id': id, 'size': "Large", 'quantity': 1, 'price': large_price, 'toppings': [], 'extra': []};
+                       item_data = {'item_id': id, 'size': "Large", 'quantity': 1, 'price': large_price, 'toppings': [], 'extra': []};
+                       document.querySelector('#large_price_'+id).checked = 0;
+                       no_size_is_selected = false;
                      }
                      // check for topping and extra items
                      var toppings = document.querySelectorAll('.Topping_'+id);
@@ -100,6 +106,7 @@
                        {
                          //console.log(toppings[i].value);
                          item_data["toppings"].push(toppings[i].value);
+                         toppings[i].checked = 0;
                        }
                      }
 
@@ -110,7 +117,12 @@
                        {
                          //console.log(extra[i].value);
                          item_data['extra'].push(extra[i].value)
+                         extra[i].checked = 0;
                        }
+                     }
+                     if(no_size_is_selected) {
+                       alert('Please select the size of your item');
+                       return false;
                      }
                      console.log(item_data);
                      $.ajaxSetup({
@@ -144,7 +156,7 @@
                                  li.innerHTML += item_data['extra'][item_data['extra'].length - 1];
                                }
                                document.querySelector('#shopping_list').append(li);
-                               
+
                                if(!document.querySelector('#proceed_button')) {
                                    var btn = document.createElement("BUTTON");
                                    btn.innerHTML = "Proceed";
@@ -210,19 +222,52 @@
                       <div class="modal-body">
                         <p id="itemName_{{ item.id }}">{{ item.name }}</p>
                         {% if item.small_price %}
-                          <input type="radio" id="small_price_{{ item.id }}" name="small_price" value="{{ item.small_price}}">
+                          <input type="radio" id="small_price_{{ item.id }}" name="small_price" value="{{ item.small_price}}" required>
                           <label for="small_price">Small ({{ item.small_price}})</label><br>
                         {% endif %}
                         {% if item.large_price %}
-                          <input type="radio" id="large_price_{{ item.id }}" name="large_price" value="{{ item.large_price}}">
+                          <input type="radio" id="large_price_{{ item.id }}" name="large_price" value="{{ item.large_price}}" required>
                           <label for="large_price">Large ({{ item.large_price}})</label><br>
                         {% endif %}
+                        <script>
+                              $(document).ready(function() {
+
+                                var radioSelected = [];
+                                var numberOfSelected = null;
+
+                                $('input[type=radio]').change(function() {
+                                  numberOfSelected = $('input[type=radio]:checked').length;
+                                  var name = $(this)[0].name;
+                                  if (radioSelected.indexOf(name) == -1) {
+                                    radioSelected.push($(this)[0].name);
+                                  }
+
+                                  if(radioSelected.length > 1) {
+                                    var removed = radioSelected.shift();
+                                    $('input[name=' + removed + ']').prop('checked', false);
+                                  }
+                                });
+
+                            });
+                        </script>
                       </div>
                       {% if item.number_of_topping %}
-                      <p>Toppings</p>
+                      <p>Toppings (please select up to {{item.number_of_topping}} toppings)</p>
                       {% for topping in toppings %}
                       <input type="checkbox" id="Topping{{topping.id}}_{{ item.id }}" class="Topping_{{item.id}}" name="{{ topping.name }}" value="{{ topping.name }}">
                       <label for="Topping{{topping.id}}">{{ topping.name }}</label><br>
+                     <script>
+                          $(document).ready(function () {
+                              $("input[class=Topping_{{item.id}}]").change(function () {
+                                    var maxAllowed = {{ item.number_of_topping }};
+                                    var cnt = $("input[class=Topping_{{item.id}}]:checked").length;
+                                    if (cnt > maxAllowed) {
+                                        $(this).prop("checked", "");
+                                        alert('You can not select more than ' + maxAllowed + ' toppings!');
+                                    }
+                                });
+                          });
+                      </script>
                       {% endfor %}
                       {% endif %}
 
