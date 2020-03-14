@@ -20,7 +20,7 @@
   <script>
         document.addEventListener('DOMContentLoaded', function() {
             var menu = {{ serialized_menu | safe }};
-
+            var total_price=0;
             // retrive shopping cart items when the user refresh the page
             $.ajax({
                  dataType: 'json',
@@ -31,6 +31,7 @@
                       //document.querySelector('#shopping_list').append(li);
                       console.log(JSON.parse(response));
                       shopping_cart_items = JSON.parse(response);
+
                       for(var i = 0; i < shopping_cart_items.length; i++)
                       {
                         const li = document.createElement('li');
@@ -38,6 +39,7 @@
                          shopping_cart_items[i]['size'] + "(" + shopping_cart_items[i]['price'] + ")";
                         li.setAttribute("class", "list-group-item");
                         document.querySelector('#shopping_list').append(li);
+                        total_price += shopping_cart_items[i]['price'];
 
                         if(shopping_cart_items[i]['toppings'].length)
                         {
@@ -61,6 +63,14 @@
 
                       if(shopping_cart_items.length)
                       {
+                        // adding total price info
+                        var price = document.createElement("H5");
+                        var t = document.createTextNode("Total price = " + total_price +"$");
+                        price.appendChild(t);
+                        price.setAttribute("id", "price_info");
+                        document.getElementById("shopping_cart").appendChild(price);
+
+                        // adding proceed_button
                         var btn = document.createElement("BUTTON");
                         btn.innerHTML = "Proceed";
                         btn.setAttribute("id", "proceed_button");
@@ -170,7 +180,16 @@
                                li.setAttribute("class", "list-group-item");
                                document.querySelector('#shopping_list').append(li);
 
+                               total_price+=parseFloat(item_data['price']);
+
                                if(!document.querySelector('#proceed_button')) {
+                                   // adding total price info
+                                   var price = document.createElement("H5");
+                                   var t = document.createTextNode("Total price = " + total_price +"$");
+                                   price.appendChild(t);
+                                   price.setAttribute("id", "price_info");
+                                   document.getElementById("shopping_cart").appendChild(price);
+
                                    var btn = document.createElement("BUTTON");
                                    btn.innerHTML = "Proceed";
                                    btn.setAttribute("id", "proceed_button");
@@ -179,6 +198,10 @@
                                      window.location.href = "{% url 'place_order' %}";
                                    }
                                    document.getElementById("shopping_cart").appendChild(btn);
+                               }
+                               else {
+                                 var price = document.getElementById("price_info");
+                                 price.innerHTML = "Total price = " + total_price +"$";
                                }
                           },
                           error: function (response) {
