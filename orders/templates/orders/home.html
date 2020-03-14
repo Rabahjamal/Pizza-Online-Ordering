@@ -1,63 +1,21 @@
+{% load static %}
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <title>Bootstrap Example</title>
+  <title>Pinnochio’s Pizza & Subs</title>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+  <link rel="stylesheet" href="{% static 'orders/styles.css' %}"/>
   <!--<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script> -->
   <style>
-      body  {
-        background-image: url("https://i.pinimg.com/originals/21/c8/be/21c8be189b4dbcfd250120cc4d1b47ce.png");
-        background-repeat: no-repeat;
-        background-attachment: fixed;
-        background-position: center;
-        background-size: cover;
-      }
-
-      .panel-transparent {
-        background: none;
-    }
-
-    .panel-transparent .panel-heading{
-        background: rgba(122, 130, 136, 0.2)!important;
-    }
-
-    .panel-transparent .panel-body{
-        background: rgba(46, 51, 56, 0.2)!important;
-    }
-    .item-link{
-      margin: 15px 0px 0px 0px;
-    }
-
-    a:link {
-      text-decoration: none;
-      color:white
-    }
-
-    a:visited {
-      text-decoration: none;
-      color:white
-    }
-
-    a:hover {
-      text-decoration: none;
-      color:white
-    }
-
-    a:active {
-      text-decoration: none;
-      color:white
-    }
-
-    ul {
-      list-style-type: none;
-    }
+    body { padding-top: 70px; }
   </style>
   <script>
         document.addEventListener('DOMContentLoaded', function() {
@@ -254,8 +212,30 @@
 </head>
 <body>
 
+  <nav class="navbar navbar-default navbar-fixed-top">
+  <div class="container-fluid">
+    <!-- Brand and toggle get grouped for better mobile display -->
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <!-- <a class="navbar-brand" href="#">{{ user.username }}</a> -->
+      <p class="navbar-text">Signed in as <a href="#" class="navbar-link">{{ user.username }}</a></p>
+    </div>
 
-<h1>Hello, {{ user.first_name }}</h1>
+    <!-- Collect the nav links, forms, and other content for toggling -->
+    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+      <ul class="nav navbar-nav navbar-right">
+        <li><a href="{% url 'logout' %}">Logout</a></li>
+      </ul>
+    </div><!-- /.navbar-collapse -->
+  </div><!-- /.container-fluid -->
+</nav>
+
+<!-- <h1>Hello, {{ user.first_name }}</h1> -->
 <div class="container">
   <div class="row">
     <div class="col-md-8">
@@ -280,7 +260,7 @@
                             <div class="modal-content">
                               <div class="modal-header">
                                 <button type="button" class="close" data-dismiss="modal">&times;</button>
-                                <h4 class="modal-title">Modal Header</h4>
+                                <h4 class="modal-title">{{ item.name }}</h4>
                               </div>
                               <div class="modal-body">
                                 <p id="itemName_{{ item.id }}">{{ item.name }}</p>
@@ -370,6 +350,5 @@
   </div>
 </div>
 
-<a href="{% url 'logout' %}">Logout</a>
 </body>
 </html>

@@ -10,7 +10,7 @@ from .models import *
 # Create your views here.
 def index(request):
     if not request.user.is_authenticated:
-        return render(request, "orders/index.html", {"message": None})
+        return render(request, "orders/login.html", {"message": None})
     # get all categories from the database
     categories = Category.objects.all()
     toppings = Topping.objects.all()
