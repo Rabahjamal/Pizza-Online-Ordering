@@ -24,5 +24,6 @@ CMD ["/usr/lib/postgresql/9.3/bin/postgres", "-D", "/var/lib/postgresql/9.3/main
 
 USER root
 
-RUN /etc/init.d/postgresql start && /etc/init.d/postgresql enable
+#RUN /etc/init.d/postgresql start
+CMD ["/etc/init.d/postgresql", "start"]
 RUN cd /opt && git clone https://github.com/Rabahjamal/Pizza-Online-Ordering.git && cd Pizza-Online-Ordering && pip3 install -r requirements.txt && python3 manage.py migrate && python3 manage.py makemigrations && python3 manage.py runserver
